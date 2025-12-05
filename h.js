@@ -15,7 +15,7 @@ const slides = [
     image: "img/6.jpg",
     tag: "Histoire",
     title: "Les stimulants",
-    desc: "Toute histoire de reussite commence par difficultés."
+    desc: "Toute histoire de reussite commence par difficultés,"
   },
   {
     image: "img/2.jpg",
@@ -46,6 +46,12 @@ const slides = [
     tag: "actuel",
     title: "Les enjeux de notre temps",
     desc: "À chaque époque, l’humanité souffre d’un nouveau tyran. Peut-être que notre forme d’asservissement aujourd’hui réside dans notre dépendance aux Big Tech, et que l’empereur n’a fait que changer de visage pour devenir ces géants technologiques."
+  },
+  {
+    image: "img/15.png",
+    tag: "actuel",
+    title: "notre prochaine étape ",
+    desc: "Dans certains cas, le recul est nécessaire pour recommencer plus fort. Cela peut être ennuyeux, difficile, mais le résultat mérite tous les sacrifices. Toutes les technologies que nous utilisons aujourd’hui ont été développées par nos grands‑pères, et nous avons la capacité de les reproduire et de les améliorer, bien sûr, sans repartir de zéro"
   }
 ];
 scrollZone.style.height = `${slides.length * 100}vh`;

@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Page du Destin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #e0d5c7;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Effet étoiles de fond */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(15, 20, 40, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 60px 40px;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        h1:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #c0a080;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            color: #e0d5c7;
+            font-family: 'Georgia', serif;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            border-color: #ffd700;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-error {
+            color: #ff6b6b;
+            font-size: 0.85em;
+            margin-top: 5px;
+            min-height: 20px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            border: none;
+            border-radius: 8px;
+            color: #0a0e27;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* === POPUP DE VICTOIRE === */
+        .victory-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: popupFadeIn 0.3s ease-out;
+        }
+
+        .victory-popup.active {
+            display: flex;
+        }
+
+        @keyframes popupFadeIn {
+            from {
+                backdrop-filter: blur(0px);
+            }
+            to {
+                backdrop-filter: blur(8px);
+            }
+        }
+
+        .victory-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        .victory-content {
+            position: relative;
+            z-index: 1001;
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            max-width: none;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+        }
+
+        .victory-text-container {
+            flex: 0 1 auto;
+            text-align: center;
+            max-width: 4000px;
+        }
+
+        .victory-gif {
+            flex: 0 1 auto;
+            max-width: 350px;
+            animation: floatIn 0.8s ease-out;
+        }
+
+        .victory-gif img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .victory-text {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            animation: victoryPulse 0.6s ease-in-out;
+        }
+
+        @keyframes victoryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .victory-subtitle {
+            font-size: 1.5em;
+            color: #d4af37;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .victory-message {
+            font-size: 1.2em;
+            color: #e0d5c7;
+            margin-bottom: 40px;
+            max-width: 100%;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        .close-victory {
+            background: #d4af37;
+            color: #0a0e27;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out 0.9s both;
+        }
+
+        .close-victory:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Confettis */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti.red { background: #ff6b6b; }
+        .confetti.blue { background: #4ecdc4; }
+        .confetti.purple { background: #b19cd9; }
+        .confetti.green { background: #95e1d3; }
+        .confetti.orange { background: #ff9f43; }
+
+        /* Fireworks */
+        .fireworks {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        /* Easter egg - Mode Secret */
+        .secret-mode {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffd700, #ff8c00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0e27;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: float 3s ease-in-out infinite;
+            z-index: 50;
+            opacity: 0;
+        }
+
+        .secret-mode.revealed {
+            opacity: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Mode secret activé */
+        body.secret-activated {
+            background: linear-gradient(135deg, #2d0a3d 0%, #3d1a4d 50%, #2d0a3d 100%);
+        }
+
+        body.secret-activated .container {
+            background: rgba(45, 10, 61, 0.9);
+            border-color: #ff00ff;
+        }
+
+        body.secret-activated h1 {
+            color: #ff00ff;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .victory-text {
+                font-size: 2.5em;
+            }
+
+            .victory-subtitle {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .victory-content {
+                flex-direction: column;
+                gap: 20px;
+                padding: 30px;
+            }
+
+            .victory-gif {
+                max-width: 250px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Effet étoiles -->
+    <div class="stars" id="starsContainer"></div>
+
+    <!-- Page principale -->
+    <div class="container">
+        <h1 id="destinyTitle">✨ La Page du Destin ✨</h1>
+        <p class="subtitle">Remplissez ce formulaire... votre destinée vous attend</p>
+
+        <form id="destinyForm">
+            <div class="form-group">
+                <label for="name">Votre Nom</label>
+                <input type="text" id="name" name="name" placeholder="Entrez votre nom...">
+                <div class="form-error" id="nameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Votre Email</label>
+                <input type="email" id="email" name="email" placeholder="votre@email.com">
+                <div class="form-error" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Sujet</label>
+                <input type="text" id="subject" name="subject" placeholder="Quel est votre sujet ?">
+                <div class="form-error" id="subjectError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Écrivez votre message ici..."></textarea>
+                <div class="form-error" id="messageError"></div>
+            </div>
+
+            <button type="submit" class="submit-btn">joindre notre communauté</button>
+        </form>
+    </div>
+
+    <!-- Popup de Victoire -->
+    <div class="victory-popup" id="victoryPopup">
+        <div class="victory-backdrop"></div>
+        <div class="victory-content">
+            <div class="victory-text-container">
+                <div class="victory-text" id="victoryText">🎉 VOUS AVEZ GAGNÉ ! 🎉</div>
+                <div class="victory-subtitle">Félicitations, Élu(e) du Destin !</div>
+                <div class="victory-message" id="victoryMessage">
+                    Votre message a été reçu par les puissances cosmiques.<br>
+                    Une destinée incroyable vous attend ! ✨
+                </div>
+                <a href="">
+                    <button class="close-victory" id="closeVictory">Fermer</button>
+                </a>
+            </div>
+            <div class="victory-gif">
+                <img src="img/14.gif" alt="Celebration GIF">
+            </div>
+        </div>
+    </div>
+
+    <!-- Easter egg circle -->
+    <div class="secret-mode" id="secretEgg">🎭</div>
+
+    <script>
+        // ===== GÉNÉRATEUR D'ÉTOILES =====
+        function generateStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // ===== EASTER EGG 1: Cliquer sur le titre =====
+        document.getElementById('destinyTitle').addEventListener('click', function() {
+            this.style.transform = 'rotateZ(360deg)';
+            this.style.transition = 'transform 0.8s ease';
+            setTimeout(() => {
+                this.style.transform = 'rotateZ(0deg)';
+            }, 800);
+        });
+
+        // ===== EASTER EGG 2: Code secret (taper "gagner") =====
+        let secretCode = '';
+        document.addEventListener('keydown', function(e) {
+            secretCode += e.key.toLowerCase();
+            if (secretCode.includes('gagner')) {
+                activateSecretMode();
+                secretCode = '';
+            }
+            if (secretCode.length > 10) {
+                secretCode = secretCode.slice(-10);
+            }
+        });
+
+        function activateSecretMode() {
+            document.body.classList.toggle('secret-activated');
+            document.getElementById('secretEgg').classList.add('revealed');
+            createSparkles(20);
+        }
+
+        document.getElementById('secretEgg').addEventListener('click', activateSecretMode);
+
+        // ===== VALIDATION FORMULAIRE =====
+        function validateForm() {
+            let isValid = true;
+            const errors = {
+                name: document.getElementById('nameError'),
+                email: document.getElementById('emailError'),
+                subject: document.getElementById('subjectError'),
+                message: document.getElementById('messageError')
+            };
+
+            Object.keys(errors).forEach(key => {
+                errors[key].style.display = 'none';
+                errors[key].textContent = '';
+            });
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!name) {
+                errors.name.textContent = '😢 Dites-nous votre nom !';
+                errors.name.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                errors.email.textContent = '📧 Un email valide, s\'il vous plaît !';
+                errors.email.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!subject) {
+                errors.subject.textContent = '💭 Quel est votre sujet ?';
+                errors.subject.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!message) {
+                errors.message.textContent = '✍️ Écrivez un message !';
+                errors.message.style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // ===== CONFETTIS ANIMÉS =====
+        function createConfetti(x, y, count = 30) {
+            const colors = ['red', 'blue', 'purple', 'green', 'orange'];
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti ' + colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = x + 'px';
+                confetti.style.top = y + 'px';
+
+                const angle = (Math.PI * 2 * i) / count;
+                const velocity = 8 + Math.random() * 6;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+
+                document.body.appendChild(confetti);
+
+                let posX = x;
+                let posY = y;
+                let velX = tx;
+                let velY = ty;
+                const duration = 2000;
+                const startTime = Date.now();
+
+                function animate() {
+                    const elapsed = Date.now() - startTime;
+                    if (elapsed > duration) {
+                        confetti.remove();
+                        return;
+                    }
+
+                    velY += 0.2; // Gravité
+                    posX += velX;
+                    posY += velY;
+
+                    confetti.style.left = posX + 'px';
+                    confetti.style.top = posY + 'px';
+                    confetti.style.opacity = 1 - (elapsed / duration);
+                    confetti.style.transform = `rotate(${(elapsed / 20)}deg)`;
+
+                    requestAnimationFrame(animate);
+                }
+
+                animate();
+            }
+        }
+
+        // ===== FEUX D'ARTIFICE =====
+        function createFireworks() {
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const x = window.innerWidth / 2 + (Math.random() - 0.5) * 300;
+                    const y = window.innerHeight / 2 + (Math.random() - 0.5) * 300;
+                    createConfetti(x, y, 40);
+                }, i * 150);
+            }
+        }
+
+        // ===== PARTICULES SCINTILLANTES (Mode secret) =====
+        function createSparkles(count) {
+            for (let i = 0; i < count; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'confetti purple';
+                sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(sparkle);
+
+                let size = 3 + Math.random() * 5;
+                sparkle.style.width = size + 'px';
+                sparkle.style.height = size + 'px';
+
+                const duration = 1500;
+                const startTime = Date.now();
+
+                function animateSparkle() {
+                    const elapsed = Date.now() - startTime;
+                    if (elapsed > duration) {
+                        sparkle.remove();
+                        return;
+                    }
+
+                    sparkle.style.opacity = Math.sin((elapsed / duration) * Math.PI);
+                    sparkle.style.transform = `translateY(${-elapsed / 10}px)`;
+                    requestAnimationFrame(animateSparkle);
+                }
+
+                animateSparkle();
+            }
+        }
+
+        // ===== AFFICHAGE DE LA POPUP DE VICTOIRE =====
+        function showVictoryPopup(name) {
+            const popup = document.getElementById('victoryPopup');
+            const message = document.getElementById('victoryMessage');
+            
+            const messages = [
+                `Bravo ${name} ! Votre message a traversé les dimensions !`,
+                `${name}, vous avez déclenché l'apocalypse des confettis ! 🎊`,
+                `${name}, vous êtes désormais un Champion du Destin !`,
+                `${name}, même l'univers applaudit ! 👏`
+            ];
+
+            message.textContent = messages[Math.floor(Math.random() * messages.length)];
+            popup.classList.add('active');
+
+            // Feux d'artifice massifs
+            createFireworks();
+            setTimeout(() => createFireworks(), 300);
+            setTimeout(() => createFireworks(), 600);
+
+            // Musique de victoire (optionnel - code commenté pour compatibilité)
+            playVictorySound();
+        }
+
+        // ===== SON DE VICTOIRE =====
+        function playVictorySound() {
+            // Création d'une petite mélodie avec Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [523.25, 659.25, 783.99]; // Do, Mi, Sol
+                let time = audioContext.currentTime;
+
+                notes.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.1, time + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + i * 0.1 + 0.2);
+                    osc.start(time + i * 0.1);
+                    osc.stop(time + i * 0.1 + 0.2);
+                });
+            } catch (e) {
+                console.log('Son non disponible');
+            }
+        }
+
+        // ===== SOUMISSION DU FORMULAIRE =====
+        document.getElementById('destinyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value;
+            const btn = document.querySelector('.submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Traitement du Destin...';
+
+            // Simulation d'envoi
+            setTimeout(() => {
+                showVictoryPopup(name);
+                btn.disabled = false;
+                btn.textContent = 'Sceller mon Destin';
+                document.getElementById('destinyForm').reset();
+            }, 1000);
+        });
+
+        // ===== FERMETURE DE LA POPUP =====
+        document.getElementById('closeVictory').addEventListener('click', function() {
+            document.getElementById('victoryPopup').classList.remove('active');
+        });
+
+        // Fermer aussi en cliquant sur le fond
+        document.getElementById('victoryPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // ===== INITIALISATION =====
+        window.addEventListener('load', generateStars);
+    </script>
+</body>
+</html>
