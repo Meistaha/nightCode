@@ -7,7 +7,7 @@ const tag = document.getElementById("tag");
 
 const scrollZone = document.querySelector(".scroll-zone");
 
-let currentIndex = 0;
+let currentIndex = -1;
 let showingBg1 = true;
 
 const slides = [
@@ -51,6 +51,22 @@ const slides = [
 scrollZone.style.height = `${slides.length * 100}vh`;
 
 bg1.style.backgroundImage = `url(${slides[0].image})`;
+function showSlide(index) {
+  const slide = slides[index];
+
+  bg1.style.backgroundImage = `url(${slide.image})`;
+  bg1.style.opacity = 1;
+  bg2.style.opacity = 0;
+
+  tag.innerText = slide.tag;
+  title.innerText = slide.title;
+  desc.innerText = slide.desc;
+
+  currentIndex = 0;
+  showingBg1 = true;
+}
+
+showSlide(0);
 
 window.addEventListener("scroll", () => {
 
